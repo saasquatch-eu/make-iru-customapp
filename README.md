@@ -18,7 +18,7 @@ Examples:
 
 The app currently ships one basic connection:
 
-- `Iru Read API Key`
+- `Iru API Key`
 
 Connection parameters:
 
