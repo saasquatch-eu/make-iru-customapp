@@ -9,7 +9,7 @@
     "components": {
         "connection": {
             "connection1": {
-                "label": "Iru Read API Key",
+                "label": "Iru API Key",
                 "connectionType": "basic",
                 "codeFiles": {
                     "communication": "connections/connection1/connection1.communication.iml.json",
@@ -20,8 +20,8 @@
         },
         "module": {
             "searchsn": {
-                "label": "List devices",
-                "description": "Lists devices with device, blueprint, platform, user, and OS version filters.",
+                "label": "Search devices",
+                "description": "Searches devices by device, blueprint, platform, user, and OS version filters.",
                 "moduleType": "search",
                 "connection": "connection1",
                 "altConnection": null,
@@ -95,8 +95,8 @@
                 }
             },
             "listtags": {
-                "label": "List tags",
-                "description": "Lists tags with optional search filtering.",
+                "label": "Search tags",
+                "description": "Searches tags by name.",
                 "moduleType": "search",
                 "connection": "connection1",
                 "altConnection": null,
@@ -132,16 +132,16 @@
     },
     "origins": [
         {
-            "label": "Origin",
-            "baseUrl": "https://us1.make.celonis.com/api",
-            "appId": "iru-app-fwosfx",
+            "label": "Personal",
+            "baseUrl": "https://eu2.make.com/api",
+            "appId": "iru-d62j6g",
             "appVersion": 1,
-            "apikeyFile": "../.secrets/apikey",
+            "apikeyFile": ".secrets/apikey",
             "idMapping": {
                 "connection": [
                     {
                         "local": "connection1",
-                        "remote": "iru-app-fwosfx"
+                        "remote": "iru-d62j6g"
                     }
                 ],
                 "module": [
@@ -152,10 +152,6 @@
                     {
                         "local": "getdevice",
                         "remote": "getdevice"
-                    },
-                    {
-                        "local": "makeapicall",
-                        "remote": "makeapicall"
                     },
                     {
                         "local": "listblueprints",
@@ -172,6 +168,10 @@
                     {
                         "local": "listtags",
                         "remote": "listtags"
+                    },
+                    {
+                        "local": "makeapicall",
+                        "remote": "makeapicall"
                     }
                 ],
                 "function": [],

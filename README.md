@@ -18,7 +18,7 @@ Examples:
 
 The app currently ships one basic connection:
 
-- `Iru Read API Key`
+- `Iru API Key`
 
 Connection parameters:
 
@@ -83,45 +83,75 @@ node tests/os-version-filters.test.cjs
 ## Local Structure
 
 ```text
-.
-  connections/
-    connection1/
-  general/
-    base.iml.json
-  modules/
-    groups.json
-    searchsn/
-    getdevice/
-    listblueprints/
-    getblueprint/
-    listdevicelibraryitems/
-    listtags/
-    makeapicall/
-  tests/
-  makecomapp.json
-  README.md
+connections/
+  connection1/
+general/
+  base.iml.json
+modules/
+  groups.json
+  searchsn/
+  getdevice/
+  listblueprints/
+  getblueprint/
+  listdevicelibraryitems/
+  listtags/
+  makeapicall/
+tests/
+  os-version-filters.test.cjs
+makecomapp.json
+README.md
 ```
 
-## Make Origin Mapping
+## Make deployment setup
 
-`makecomapp.json` points to:
+The local app points to the personal Make app `iru-d62j6g`, version `1`, in the `eu2.make.com` zone. The previous Make organization is no longer configured as an origin.
 
-- app id: `iru-app-fwosfx`
-- Make zone: `us1.make.celonis.com`
+To connect your own Make account:
 
-## Notes
+1. The new custom app is `iru-d62j6g`, version `1`, in the `eu2.make.com` zone.
+2. In Make, open **Profile → API access → Add token** and select exactly `sdk-apps:read` and `sdk-apps:write` for the Make Apps Editor. Save the new token locally in `.secrets/apikey`.
+3. The origin in `makecomapp.json` is configured as follows:
 
-- `.secrets/apikey` is used for the Make app origin, not for the Iru tenant API token used when creating a connection in scenarios.
-- Only the modules referenced from `makecomapp.json` are included in local deployment. Excluding a folder from the manifest does not mean the remote module has been removed.
+```json
+"origins": [
+    {
+        "label": "Personal",
+        "baseUrl": "https://eu2.make.com/api",
+        "appId": "iru-d62j6g",
+        "appVersion": 1,
+        "apikeyFile": ".secrets/apikey"
+    }
+]
+```
 
-## Deployed state checked on 2026-10-07
+4. Open this repository folder in Visual Studio Code with the official [Make Apps Editor extension](https://marketplace.visualstudio.com/items?itemName=Integromat.apps-sdk) installed and enabled. Configure its SDK environment for `https://eu2.make.com/api` using the Make API token. In the Explorer file tree, right-click `makecomapp.json`, select **Deploy to Make (beta)**, and select the Personal origin. Map the local components to newly created components when prompted. The Deploy menu item comes from this extension and will not appear in editors without it.
+5. Create an Iru connection in Make using your tenant API URL and Iru token, then test the modules in a scenario.
 
-The configured Make API reports app version `1.0.0` and twelve modules. The seven modules in the local manifest were present, along with five older modules: `listadedevices`, `listadeintegrations`, `listdeviceactivity`, `listdeviceapps`, and `listusers`. These five are grouped under `Other` remotely and are not archived. The deployed `listadedevices` communication also differs from its local file.
+The `.secrets` directory, legacy `secrets/` directory, and `.env` files are ignored by Git. The Make deployment token in `.secrets/apikey` is separate from the Iru API token used by scenario connections.
+
+Only modules referenced in the manifest are included in deployment. Removing the old origin does not change the old remote app or its scenarios.
+
+On 2026-10-15, Make Apps Editor wrote remote mappings for the connection and all seven manifest modules under the Personal origin. Scenario execution has not yet been verified.
+
+## Public-release checklist
+
+Before requesting Make app review:
+
+1. Test the connection with a valid Iru API token and confirm that an invalid token produces a useful error.
+2. Run a scenario containing each of the seven modules. Use synthetic device, user, and tenant data in any logs shared with Make.
+3. Verify device, blueprint, and tag pagination with more results than one API page, including a filter that produces an empty intermediate device page.
+4. Verify that `last_check_in`, `first_enrollment`, `last_enrollment`, and `reported_at` are returned in ISO 8601 format. If any differs, add `parseDate()` to that output before review.
+5. Set the app theme and a 512–2048 px PNG logo in Make, then prepare the review form with Iru API documentation, a support contact, your relationship with Iru, and links to the test scenarios.
+
+The universal **Make an API Call** module accepts only a path relative to the tenant API URL. Enter `/devices`, never a full URL.
+
+## Historical state of the previous origin, checked on 2026-10-07
+
+The previous origin’s Make API reported app version `1.0.0` and twelve modules. The seven modules in the local manifest were present, along with five older modules: `listadedevices`, `listadeintegrations`, `listdeviceactivity`, `listdeviceapps`, and `listusers`. These five are grouped under `Other` remotely and are not archived. The deployed `listadedevices` communication also differs from its local file.
 
 The app metadata reports `public: true` and `approved: false`; each module reports `public: false`. Those flags alone do not establish which existing scenarios can use the app. Deployment and scenario execution were not performed as part of this check.
 
 ## Next Steps
 
-1. Deploy the reviewed local fixes for the seven manifest modules and the connection.
-2. Test device listing with a UUID user filter, a limit above 300, both additional OS version filters (including a page with no matches), and multi-page blueprint and tag listing in Make.
-3. Reconcile the five older remote modules separately, preserving any scenario dependencies and the remote ADE changes.
+1. Create an Iru connection in the personal Make app and test device listing with a UUID user filter, a limit above 300, both additional OS version filters (including a page with no matches), and multi-page blueprint and tag listing.
+2. Reconcile the five older modules only if they are needed in the new app, preserving any scenario dependencies and the previous remote ADE changes.
