@@ -2,7 +2,7 @@
 	"qs": {
 		"{{...}}": "{{toCollection(parameters.qs, 'key', 'value')}}"
 	},
-	"url": "/{{parameters.url}}",
+	"url": "/{{replace(parameters.url; /^\\/+/; emptystring)}}",
 	"body": "{{parameters.body}}",
 	"type": "text",
 	"method": "{{parameters.method}}",

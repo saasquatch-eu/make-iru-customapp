@@ -9,7 +9,7 @@
     "components": {
         "connection": {
             "connection1": {
-                "label": "Iru API Key",
+                "label": "Iru Tenant API Key",
                 "connectionType": "basic",
                 "codeFiles": {
                     "communication": "connections/connection1/connection1.communication.iml.json",
